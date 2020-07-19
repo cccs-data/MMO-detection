@@ -4,7 +4,7 @@ from pickle import load
 from utils import break_and_add_path
 
 #load temporal networks, whose format is (timestamps * agents * agents)
-f = open('./data/pigeon_80_1000','rb')
+f = open('./result/oCEP_output','rb')
 raw_TN = load(f)
 f.close()
 
@@ -59,7 +59,14 @@ print('information of the pathset without redundant nodes:')
 print(real_path_set)
 
 #The high-order model is generated from the path set S and named as Model. The maximum order is preliminarily set as 5. If the final estimated optimal order is the same as the maximum order, the maximum order should be increased
-model = pathpy.MultiOrderModel(real_path_set, max_order=5)
+max_order = 5
+success = False
+while not success:
+    try:
+        model = pathpy.MultiOrderModel(real_path_set, max_order=max_order)
+        success = True
+    except:
+        max_order -= 1
 
 #estimate optimal order of the pathset
 print('detecting the optimal order...')
