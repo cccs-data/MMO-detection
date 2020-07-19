@@ -1,25 +1,25 @@
 import pickle as pk
 import numpy as np
 
-# 存为二进制
+# save as binary file
 def data_writer_b(file_path, data):
     with open(file_path, 'wb') as file:
         pk.dump(data, file)
 
-# 存为txt
+# save as txt
 def data_writer_txt(file_path, data):
     with open(file_path, 'w') as file:
         file.write(str(data))
         file.write('\n')
 
-# 读取二进制
+# read binary file
 def data_reader_b(file_path):
     f = open(file_path, 'rb')
     data = pk.load(f)
     f.close()
     return data
 
-# 邻接矩阵归一化
+# normalize the adjacent matrix
 def toScale(mat):
     matrix = np.copy(mat)
 
@@ -36,9 +36,9 @@ def toScale(mat):
     return matrix
 
 def data_reader_scale(file_path):
-    # 读取数据
+    # read data
     data = data_reader_b(file_path)
-    # 归一化
+    # normalization
     for i in range(0, data.shape[0]):
         data[i] = toScale(data[i])
     return data

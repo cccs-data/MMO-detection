@@ -1,11 +1,9 @@
 import numpy as np
-# 引入条件熵计算方法。
 from KSG.CMI import conditional_mutual_information
-# 引入补集计算方法
 from KSG.ComplementarySet import complementary_set
 
 '''
-    PRNN算法：
+    PRNN algorithm：
         for every j in Z:
             if Cj-x|Z-{j} = 0 then:
                 Z = Z - {j}
@@ -14,37 +12,36 @@ from KSG.ComplementarySet import complementary_set
 
         return Ni
 
-    简而言之：遍历Z集中的点y，对每个点y计算条件互信息Cj-x|Z-{j}，如果Cj-x|Z-{j} = 0，则删除点y。
+    Loop through all the nide y in Z. Calculate Cj-x|Z-{j} for each node Y. If Cj-x|Z-{j} = 0, then delete node Y.
 '''
 
 
 def PRNNAlgorithm(x, z_set, z_size, nodes, k, tau):
-    # x是目标节点，z是ADC中得到的可能的因果父母（包括x本身），nodes全部样本，N是样本量，t是时刻，knn
-    # 创建栈记录因果熵为0的点，这部分点将被删除。
+    # x is the target node. Z is the possible causal parents obtained by ADC (including x)
+    # create stack to record nodes whose causal entropy is 0. These nodes will be deleted.
     need_to_delete = np.zeros(shape=z_size, dtype=np.int64)
     stack_size = 0
     causal_entropy = np.zeros(shape=nodes.shape[0], dtype=np.float64)
 
-    # 遍历Z集，分别计算因果熵，检测是否有点需要删除。
-    # x本身位于Z[0],j从Z[1]开始遍历
+    # loop through Z to calculate causal entropy to detect the nodes to be deleted
     for j in range(1, z_size):
-        # 在z集中去掉节点j,称为c_set
+        # elete j from set z to form c_set
         c_set, c_size = complementary_set([z_set[j]], 1, z_set[0: z_size])
-        # 计算因果熵Cj-x|Z-{j}
+        # calculate causal entropy Cj-x|Z-{j}
         causal_entropy_c_set = conditional_mutual_information(x, z_set[j], c_set, nodes, k, tau)
-        # 判断因果熵Cj-i|K-{j}是否大于0，大于0则保留，等于0则记录点j，等待删除。
+        # judge whether causal entropy Cj-i|K-{j} is greater than 0. If Cj-i|K-{j} <= 0, the record j to be deleted latter.
         # print(causal_entropy_c_set)
         if causal_entropy_c_set <= 0:
-            # 记录点j。
+            # record node j
             need_to_delete[stack_size] = j
             stack_size += 1
         else:
             causal_entropy[z_set[j]] = causal_entropy_c_set
 
-    # 最后在K集中删除所有已记录的点。
+    # delete all recorded nodes in K
     z_set = np.delete(z_set, need_to_delete[0: stack_size], axis=0)
     z_size = z_size - stack_size
 
-    # 返回删除点后的K集。
+    # return K after deleting the nodes
     return z_set, z_size, causal_entropy
 
