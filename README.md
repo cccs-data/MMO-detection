@@ -1,7 +1,7 @@
 # MMO-detection
 ## Introduction
 
-Code for maximum Markovian order detection.
+Code for paper ["Maximum Markovian order detection for collective behavior"](https://www.researchgate.net/profile/Duxin_Chen/publication/343471302_Maximum_Markovian_order_detection_for_collective_behavior/links/5f2d7e4ca6fdcccc43b2d261/Maximum-Markovian-order-detection-for-collective-behavior.pdf)
 
 ## Dataset
 
